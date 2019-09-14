@@ -21,7 +21,5 @@ Rupdate()
 AC_Window = tk.mainloop()
 
 #test
-
-
-
-#test3333
+#test2
+#湿哒哒刷卡记录还打算看机会
