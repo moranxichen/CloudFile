@@ -10,6 +10,8 @@
         _LightY ("LightY", Range(-1, 1)) = 0.5
         _LightZ ("LightZ", Range(-1, 1)) = 0.5
         _LBTIntensity("LBTIntensity",Range(1,5))=1
+        _LBTBackColor("LBTBackColor",Color) = (0.2,0.2,0.2,1)
+
         _OutlineWidth("OutlineWidth",Range(0,1))=0
 	}
 
@@ -86,6 +88,7 @@
        			float4 _EmissionMask_ST;
        			fixed4 _EmissionColor;
        			fixed _LBTIntensity;
+       			fixed4 _LBTBackColor;
        			fixed _EmissionIntensity;
 
 				v2f vert(appdata_base v)
@@ -105,14 +108,21 @@
 					fixed4 col = tex2D(_MainTex, i.texcoord);
 					fixed4 maskvar = tex2D(_EmissionMask, i.texcoord);
 
-					float lbt_var = ((dot(float3(_LightX,_LightY,_LightZ),i.worldNormal)*0.5)+0.5);
+					float lbt = dot(float3(_LightX,_LightY,_LightZ),i.worldNormal);
+
+					float lbt_var = (lbt*0.5)+0.5;
+
+					float4 lbtback = (pow(lbt_var*-1,2))*_LBTBackColor;
+
+					float3 lbtc = lerp((lbt_var*_MainColor).rgb,lbtback.rgb,lbt) ;
+
 					col.rgb *= i.SHLighting;
 
 
 					UNITY_APPLY_FOG(i.fogCoord, col);
 					// UNITY_OPAQUE_ALPHA(col.a);
 
-					fixed4 maincolor = fixed4(col.rgb*_MainColor*(lbt_var*_LBTIntensity) , 1);
+					fixed4 maincolor = fixed4(col.rgb*(lbtback*_LBTIntensity) , 1);
 
 					fixed3 outc = lerp(maincolor.rgb,_EmissionColor.rgb*_EmissionIntensity,maskvar.r);
 
