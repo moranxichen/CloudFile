@@ -28,13 +28,13 @@ public class ShaderCheckTool : EditorWindow
         GUILayout.Label("About shader", EditorStyles.boldLabel);
         //EditorGUILayout.BeginHorizontal();
         checkShader = EditorGUILayout.ObjectField(label: "SelectShader", checkShader, typeof(Object), true);
-        
+
 
         if (checkShader != null)
         {
             shadername = checkShader.ToString();
         }
-       
+
 
         if (GUILayout.Button("Check"))
         {
@@ -43,33 +43,36 @@ public class ShaderCheckTool : EditorWindow
 
             Listmat();
             Write();
-            ListObject();
+            //  ListObject();
 
             Debug.Log("写入成功,写入到" + Application.dataPath + "/MateCheckPath.txt");
-            Debug.Log("材质球数量:" + MaterialPath.Count);
-            Debug.Log(guid01);
+            Debug.Log("工程材质球数量:" + MaterialPath.Count);
+            Debug.Log("ShaderGUID:"+guid01);
         }
 
     }
 
     public static List<string> MaterialPath = new List<string>();
-    public static List<Material> Shadermat = new List<Material>();
+    //public static List<Material> Shadermat = new List<Material>();
     public static List<string> Checkshaderpath = new List<string>();
 
-    public static List<string> ObjectPath = new List<string>();
-    public static List<GameObject> gameobjectlist = new List<GameObject>();
-    public static List<string> objGUID = new List<string>();
+    public static List<string> PrefabPath = new List<string>();
 
+    //public static List<string> ObjectPath = new List<string>();
+    //public static List<GameObject> gameobjectlist = new List<GameObject>();
+    //public static List<string> objGUID = new List<string>();
 
+    public static string guid01;
 
     static void Listmat()
     {
         string path = Application.dataPath;
-        MaterialPath = new List<string>(Directory.GetFiles(path, "*.mat", SearchOption.AllDirectories)); 
+        MaterialPath = new List<string>(Directory.GetFiles(path, "*.mat", SearchOption.AllDirectories));
+        PrefabPath = new List<string>(Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories));
         Checkshaderpath = new List<string>();
 
         Shader shaderpath = (Shader.Find(shadername));
-        string shaderguid =AssetDatabase.GetAssetPath( shaderpath);
+        string shaderguid = AssetDatabase.GetAssetPath(shaderpath);
         guid01 = AssetDatabase.AssetPathToGUID(shaderguid); //获取shaderGUID
 
         //for (int i = 0; i < MaterialPath.Count; i++)
@@ -88,48 +91,65 @@ public class ShaderCheckTool : EditorWindow
         //        Checkshaderpath.Add(path01);
         //    }
 
-        //}
-
+        //
         for (int i = 0; i < MaterialPath.Count; i++)
         {
             string filepath = MaterialPath[i];
             if (Regex.IsMatch(File.ReadAllText(filepath), guid01))
             {
                 Checkshaderpath.Add(MaterialPath[i]);
+
+                string matpath = MaterialPath[i];
+                string[] matArray = matpath.Split('/');
+                string path01 = matArray[matArray.Length - 1];
+                string matguid = AssetDatabase.AssetPathToGUID(path01);
+
+                for (int t = 0; t < PrefabPath.Count; t++)
+                {
+                    string prefabfilepath = PrefabPath[t];
+                    if (Regex.IsMatch(File.ReadAllText(prefabfilepath), matguid))
+                    {
+                        Debug.LogWarning(PrefabPath[t] + "引用了" + path01);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("没有找到" + MaterialPath[i]+"关联的prefab");
+                    }
+
+                }
+
+                Debug.LogWarning("shader关联材质matGUID:"+matguid);
             }
         }
 
-
-
-
     }
-    public static string guid01;
-    static void ListObject()
-    {
-        string path = Application.dataPath;
-        ObjectPath = new List<string>(Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories));
 
-        for (int i = 0; i < ObjectPath.Count; i++)
-        {
-            string ObjPath = ObjectPath[i]; 
-            string[] objArray = ObjPath.Split('/'); 
-            string objpath01 = objArray[4];
+    //static void ListObject()
+    //{
+    //    string path = Application.dataPath;
+    //    ObjectPath = new List<string>(Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories));
 
-            GameObject[] gameobjectlist = new GameObject[ObjectPath.Count];
+    //    for (int i = 0; i < ObjectPath.Count; i++)
+    //    {
+    //        string ObjPath = ObjectPath[i]; 
+    //        string[] objArray = ObjPath.Split('/'); 
+    //        string objpath01 = objArray[4];
 
-            gameobjectlist[i] = AssetDatabase.LoadAssetAtPath<GameObject>(objpath01);
+    //        GameObject[] gameobjectlist = new GameObject[ObjectPath.Count];
 
-           var objguid = AssetDatabase.AssetPathToGUID(objpath01);
+    //        gameobjectlist[i] = AssetDatabase.LoadAssetAtPath<GameObject>(objpath01);
 
-            // objGUID[i] = gameobjectlist[i].name;
-            
+    //       var objguid = AssetDatabase.AssetPathToGUID(objpath01);
 
-            objGUID.Add(objguid);
-            
+    //        // objGUID[i] = gameobjectlist[i].name;
 
 
-        }
-    }
+    //        objGUID.Add(objguid);
+
+
+
+    //    }
+    //}
 
     public void Write()
     {
@@ -154,11 +174,6 @@ public class ShaderCheckTool : EditorWindow
 
         matTxtStreamWriter.Write("--------------------------" + "\r\n");
 
-        matTxtStreamWriter.Write("GUID:" + "\r\n");
-        for (int i = 0; i < ObjectPath.Count; i++)
-        {
-            matTxtStreamWriter.Write(objGUID[i] + "\r\n");
-        } 
 
         matTxtStreamWriter.Flush();
         matTxtStreamWriter.Close();
