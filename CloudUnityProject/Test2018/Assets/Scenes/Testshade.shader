@@ -3,6 +3,7 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_range("Range",Range(0,3)) = 1
     }
     SubShader
     {
