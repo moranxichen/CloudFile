@@ -23,11 +23,14 @@ except Exception as message:
 
 driver.find_element(By.XPATH , '//header/nav[1]/div[4]/div[1]/ul[1]/li[1]/a[2]').click()#登陆点击
 time.sleep(1)
-driver.find_element(By.XPATH,'/html[1]/body[1]/div[1]/div[2]/table[1]/tbody[1]/tr[2]/td[2]/div[1]/div[1]/div[1]/div[1]/form[1]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[1]/input[1]').send_keys('test!')
+driver.find_element(By.XPATH,"//input[@type='text' and@placeholder='请输入您的用户名']").send_keys("UserName")
+time.sleep(1)
+driver.find_element(By.XPATH,"//input[@type='password' and@placeholder='请输入密码']").send_keys("PassWord")
+time.sleep(1)
+# driver.find_element(By.XPATH,'/html[1]/body[1]/div[1]/div[2]/table[1]/tbody[1]/tr[2]/td[2]/div[1]/div[1]/div[1]/div[1]/form[1]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[1]/input[1]')
 
-# driver.find_element(By.XPATH , '//tbody/tr[1]/td[1]/button[1]/strong[1]').click()#登陆确认
+driver.find_element(By.XPATH , '//tbody/tr[1]/td[1]/button[1]/strong[1]').click()#登陆确认
 
 # driver.find_element(By.XPATH,'//tbody/tr[2]/td[2]/div[1]/div[1]/form[1]/div[1]/ul[1]/li[1]/input[1]').send_keys('moranxichen@Live.com')
-
 # driver.quit()
 
