@@ -32,29 +32,48 @@ def webClass():
     time.sleep(1)
     driver.find_element(By.XPATH, "//input[@type='password' and@placeholder='请输入密码']").send_keys(Account.password)
     time.sleep(1)
-    # driver.find_element(By.XPATH,'/html[1]/body[1]/div[1]/div[2]/table[1]/tbody[1]/tr[2]/td[2]/div[1]/div[1]/div[1]/div[1]/form[1]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[1]/input[1]')
 
     driver.find_element(By.XPATH, '//tbody/tr[1]/td[1]/button[1]/strong[1]').click()  # 登陆确认
     time.sleep(5)
-    # #摇奖页面
-    # driver.get('https://www.element3ds.com/plugin.php?id=yinxingfei_zzza:yinxingfei_zzza_hall')
-    # time.sleep(1)
-    # driver.find_element(By.XPATH, "//a[contains(text(),'可以摇奖')]").click()
-    # time.sleep(1)
-    # driver.find_element(By.XPATH, "//a[contains(text(),'我知道了')]").click()
-    # time.sleep(2)
-    # driver.find_element(By.XPATH, "//a[@ id = 'zzza_go']").click()#摇奖完成
-    # time.sleep(5)
+
+    #摇奖页面
+    driver.get('https://www.element3ds.com/plugin.php?id=yinxingfei_zzza:yinxingfei_zzza_hall')
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//a[contains(text(),'可以摇奖')]").click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//a[contains(text(),'我知道了')]").click()
+    time.sleep(2)
+    driver.find_element(By.XPATH, "//a[@ id = 'zzza_go']").click()#摇奖完成
+    time.sleep(5)
 
     #矿场
     driver.get('https://www.element3ds.com/plugin.php?id=yw_mine:front&mod=mineDetail&mineId=183')
     time.sleep(1)
-    if driver.find_element(By.XPATH, "//a[contains(text(),'开始挖矿')]"):
-        print ("开始挖矿!")
-    else:
-        print ("teast!")
+    IssuanceQuantity = driver.find_element(By.XPATH,"//body[1]/div[4]/div[2]/div[1]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[1]/div[3]").text
 
-    driver.quit()
+    if driver.find_elements(By.XPATH, "//a[contains(text(),'开始挖矿')]"):
+        allore = int(driver.find_element(By.XPATH,"//body[1]/div[4]/div[2]/div[1]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[3]/div[1]/span[2]").text)
+        if allore>0:
+            driver.find_element(By.XPATH, "//a[contains(text(),'领取矿石')]").click()
+            time.sleep(1)
+            driver.find_element(By.XPATH, "//tbody/tr[2]/td[2]/div[1]/div[1]/form[1]/div[2]/input[1]").click()
+            time.sleep(1)
+            driver.find_element(By.XPATH, "//input[@id='enter']").click()
+            time.sleep(1)
+
+        driver.find_element(By.XPATH, "//a[contains(text(),'开始挖矿')]").click()
+        time.sleep(1)
+        driver.find_element(By.XPATH, "//body/b[1]/div[3]/div[2]/div[4]/a[1]").click()
+        time.sleep(1)
+        driver.find_element(By.XPATH, " //a[contains(text(),'确定')]").click()
+        time.sleep(1)
+
+        mail.main(IssuanceQuantity)
+        driver.quit()
+
+    else:
+        mail.main(IssuanceQuantity+"未找到挖矿元素!")
+        driver.quit()
 
 webClass()
 
