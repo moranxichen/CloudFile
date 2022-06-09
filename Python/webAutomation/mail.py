@@ -16,5 +16,5 @@ def mail(content):
     except smtplib.SMTPException as e:
         print(e)
 
-def main():
-    mail("\n\n\n\n\n\n"+"Python自动化完成!"+"\n\n\n\n\n\n")
+def main(text):
+    mail("\n\n\n\n\n\n"+"Python自动化完成!"+"\n\n\n\n\n\n"+text+"\n\n\n\n\n\n")
